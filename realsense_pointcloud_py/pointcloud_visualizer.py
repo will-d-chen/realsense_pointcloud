@@ -51,7 +51,7 @@ class BlueObjectDetector(Node):
 
     def detect_blue_objects(self, image):
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-        lower_blue = np.array([100, 50, 50])
+        lower_blue = np.array([100, 100, 150])
         upper_blue = np.array([130, 255, 255])
         blue_mask = cv2.inRange(hsv, lower_blue, upper_blue)
         

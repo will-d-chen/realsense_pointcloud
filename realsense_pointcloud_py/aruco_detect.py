@@ -152,7 +152,30 @@ class ArucoTagDetector(Node):
         
         return np.array([x_3d, y_3d, z_3d])
 
+    def publish_base_link_tf(self, header):
+        """Publish a static transform from aruco_link to base_link."""
+        # 180-degree rotation about the X-axis
+        rotation_quaternion = [1.0, 0.0, 0.0, 0.0]  # Quaternion for 180° about X
+
+        # Create and broadcast TransformStamped
+        transform = TransformStamped()
+        transform.header = header
+        transform.child_frame_id = "base_link"
+        transform.header.frame_id = "aruco_link"
         
+        # Translation remains the same (no offset)
+        transform.transform.translation.x = 0.1
+        transform.transform.translation.y = 0.1
+        transform.transform.translation.z = 0.2
+        
+        # Apply the rotation
+        transform.transform.rotation.x = rotation_quaternion[0]
+        transform.transform.rotation.y = rotation_quaternion[1]
+        transform.transform.rotation.z = rotation_quaternion[2]
+        transform.transform.rotation.w = rotation_quaternion[3]
+        
+        self.tf_broadcaster.sendTransform(transform)
+
 
     def publish_tf_centroid(self, origin, quaternion, header):
         """Publish the transform with a low-pass filter."""
@@ -172,7 +195,7 @@ class ArucoTagDetector(Node):
         # Create and broadcast TransformStamped
         transform = TransformStamped()
         transform.header = header
-        transform.child_frame_id = "aruco_plane_frame"
+        transform.child_frame_id = "aruco_link"
         transform.transform.translation.x = self.filtered_translation[0]
         transform.transform.translation.y = self.filtered_translation[1]
         transform.transform.translation.z = self.filtered_translation[2]
@@ -182,8 +205,10 @@ class ArucoTagDetector(Node):
         transform.transform.rotation.w = self.filtered_rotation[3]
         
         self.tf_broadcaster.sendTransform(transform)
+        self.publish_base_link_tf(header)
 
 
+    
     # @staticmethod
     # def rotation_matrix_to_quaternion(matrix):
     #     """Convert a rotation matrix to a quaternion."""
