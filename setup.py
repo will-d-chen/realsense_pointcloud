@@ -25,6 +25,7 @@ setup(
     entry_points={
     'console_scripts': [
         'pointcloud_visualizer = realsense_pointcloud_py.pointcloud_visualizer:main',
+        'aruco_detect = realsense_pointcloud_py.aruco_detect:main',
         ],
     },
 )
